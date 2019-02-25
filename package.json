@@ -1,0 +1,22 @@
+{
+  "name": "osanopackager",
+  "version": "1.1.0",
+  "description": "Osano extension builder",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://www.osano.com",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-chrome-manifest": "0.0.13",
+    "gulp-clean": "^0.4.0",
+    "gulp-cssmin": "^0.2.0",
+    "gulp-if": "^2.0.2",
+    "gulp-terser": "^1.1.7",
+    "gulp-zip": "^4.2.0",
+    "run-sequence": "^2.2.1"
+  }
+}
