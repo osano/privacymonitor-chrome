@@ -51,7 +51,7 @@
 			  </div>
 			</div>
 		  </div>
-		`; // ${request.domain}
+		`;
 
 		elChild.classList.add(GUID);
 		body.appendChild(elChild);
