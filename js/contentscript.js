@@ -75,7 +75,7 @@
 			sendBtn.style.display = 'none';
 
 			chrome.runtime.sendMessage({msg: 'requestReview'});
-		}
+		};
 
 		// message listener
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
