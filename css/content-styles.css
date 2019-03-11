@@ -185,6 +185,8 @@
   border-radius: 0px;
   background: #1372C0;
   box-shadow: #000 0px 0px 1px 0px inset;
+  display: block;
+  margin: 0 auto;
 }
 #tbsend-ed942f29-391b-4914-8dc3-ce527fd6d8cc:hover {
   cursor: pointer;

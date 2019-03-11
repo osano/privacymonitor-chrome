@@ -58,7 +58,7 @@
 
 		if (url !== undefined) {
 			(async () => {
-				const rawResponse = await fetch(urls.baseURL + '/analysis', {
+				fetch(urls.baseURL + '/analysis', {
 					method: 'POST',
 					headers: {
 						'Accept': 'application/json',
@@ -66,38 +66,32 @@
 					},
 					body: JSON.stringify({domain: url})
 				});
-
-				await rawResponse.json();
 			})();
-
-
-			chrome.tabs.sendMessage(tabId, {
-				message: 'saveScoreInLocalstorage',
-				sentToAnalyze: true,
-			})
-
 		}
 	}
 
 	function getPrivacyScoreLocal(message, tabId, domain, now){
-		localforage.getItem(domain).then(function(db) {
-			if(db && db.score && !hasExpired(db.scoreDate, now)) {
+		localforage.getItem(domain).then(function(item) {
+			if(item && item.score && !hasExpired(item.scoreDate, now)) {
 				// domain score is available locally and has not gone stale
-				sendDataToContentScript(message,tabId,domain,db, now);
+				sendDataToContentScript(tabId, domain, item, now);
 			} else if(
-				!db ||
-				(db && !db.score && hasNoScoreAvailableExpired(db.scoreDate, now)) ||
-				(db && db.score && hasExpired(db.scoreDate, now))
+				!item ||
+				(item && !item.score && hasNoScoreAvailableExpired(item.scoreDate, now)) ||
+				(item && item.score && hasExpired(item.scoreDate, now))
 			) {
 				// domain score was not found
 				// OR domain score was not found last time we checked
 				// OR domain score has gone stale
+				// fetch again
 				getPrivacyScoreAPI(message, tabId, domain, now);
+			} else {
+				sendDomainNotFound(domain, tabId);
 			}
 		});
 	}
 
-	async function getPrivacyScoreAPI(message, tabId, domain, now){
+	async function getPrivacyScoreAPI(message, tabId, domain, now) {
 		await fetch(`${urls.baseURL}/score?q=${domain}`).then( response => {
 			if(response.status === 404) {
 				return null;
@@ -117,7 +111,7 @@
 
 				storePrivacyScore(domain, data);
 
-				sendDataToContentScript(message, tabId, domain, data, now);
+				sendDataToContentScript(tabId, domain, data, now);
 			} else {
 				const data = {
 					score: null,
@@ -128,11 +122,15 @@
 
 				storePrivacyScore(domain, data);
 
-				chrome.tabs.sendMessage( tabId, {
-					message: 'NotFound',
-					domain: domain
-				});
+				sendDomainNotFound(domain, tabId);
 			}
+		});
+	}
+
+	function sendDomainNotFound(domain, tabId) {
+		chrome.tabs.sendMessage( tabId, {
+			message: 'NotFound',
+			domain: domain
 		});
 	}
 	
@@ -149,7 +147,7 @@
 		localforage.setItem(domain, data);
 	}
 
-	function sendDataToContentScript(message, tabId, domain, data, now){
+	function sendDataToContentScript(tabId, domain, data, now){
 		chrome.browserAction.setIcon({
 			path : {
 				'48': 'css/images/iconColored.png'
