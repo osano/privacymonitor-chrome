@@ -15,7 +15,7 @@ gulp.task('build', function() {
 			buildnumber: true
 		}))
 		.pipe(gulpif('css/**/*.css', cssmin()))
-		.pipe(gulpif('js/**/*.js', terser()))
+		//.pipe(gulpif('js/**/*.js', terser()))
 		.pipe(gulp.dest(distDir))
 });
 
