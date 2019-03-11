@@ -37,8 +37,17 @@
 			<div id="mtm-${GUID}">
 			  <div id="pmd-${GUID}" class="mtd-${GUID}"></div>
 			  <div id="mti-${GUID}">
-				<div id="mtci-${GUID}"><img id="tcci-${GUID}" src="spinnerUrl"/></div>
+				<div id="mtci-${GUID}">
+					<img id="tcci-${GUID}" src="${urls.spinnerUrl}"/>
+				</div>
 				<div id="tcs-${GUID}"></div>
+			  </div>
+			  <div id="srta-${GUID}" style="display: none">
+				<div id="padded-${GUID}">Sorry, we haven't reviewed <span id="snrd-${GUID}"></span> yet.<br/>
+					<br/>If you would like us to add it to the queue for our legal experts to review, hit the &quot;Request&quot; button now.
+				</div>
+				<br/>
+				<button id="tbsend-${GUID}">Request</button>
 			  </div>
 			</div>
 		  </div>
@@ -50,9 +59,6 @@
 		// set initial message
 		chrome.runtime.sendMessage({msg: 'getPrivacyScore'});
 
-		// set spinner element
-		document.getElementById('tcci-' + GUID).src = urls.spinnerUrl;
-
 		const modal = document.getElementsByClassName(GUID)[0];
 		const closeBtn = document.getElementsByClassName('ct-' + GUID)[0];
 		let displayModalTimeout;
@@ -62,11 +68,21 @@
 			clearTimeout(displayModalTimeout);
 		};
 
+		const sendBtn = document.getElementById('tbsend-' + GUID);
+		sendBtn.onclick = function() {
+			const requestDiv = document.getElementById('padded-' + GUID);
+			requestDiv.innerHTML = '<div>Your request has been received. Please allow up to 10 business days for this site to be reviewed.</div>';
+			sendBtn.style.display = 'none';
+
+			chrome.runtime.sendMessage({msg: 'requestReview'});
+		};
+
 		// message listener
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			switch(request.message) {
 				case 'NotFound':
 					setDisplayDomainNotFound(request);
+					setLoading(false);
 					break;
 				case 'ActiveTabScore':
 					modal.style.display = 'block';
@@ -80,9 +96,11 @@
 					}, 1000 * 8);
 
 					setDisplayDomainScore(request);
+					setLoading(false);
 					break;
 				case 'HiddenTabScore':
 					setDisplayDomainScore(request);
+					setLoading(false);
 					break;
 				case 'ClickedOnIcon':
 					modal.style.display = 'block';
@@ -91,6 +109,10 @@
 					break;
 			}
 		});
+	}
+
+	function setLoading(isLoading) {
+		document.getElementById('tcci-' + GUID).style.display = isLoading ? 'block' : 'none';
 	}
 
 	function createScoreCicle(score, trend, status, previousScore) {
@@ -124,11 +146,6 @@
 		});
 	}
 
-	function sendUrlToAnalyze() {
-		chrome.runtime.sendMessage({msg: 'requestReview'});
-		document.getElementById('mtm-' + GUID).innerHTML = `<div id="padded-${GUID}">Your request has been received. Please allow up to 10 business days for this site to be reviewed.</div>`;
-	}
-
 	function showScoreStatus(score) {
 		if (score < 580) {
 			return [`<div id="pmsd-${GUID}" class="gst-veryPoor-${GUID}">Very Poor</div>`, 'veryPoor']
@@ -144,15 +161,8 @@
 	}
 
 	function setDisplayDomainNotFound(request) {
-		document.getElementById('mtm-' + GUID).innerHTML = `
-			<div id="srta-${GUID}">
-				<div id="padded-${GUID}">Sorry, we havent reviewed ${request.domain} yet.<br/>
-					<br/>If you would like us to add it to the queue for our legal experts to review, hit the &quot;Request&quot; button now.
-				</div>
-				<br/>
-				<button id="tbsend-${GUID}" onClick="sendUrlToAnalyze()">Request</button>
-			</div>
-		`;
+		document.getElementById('snrd-' + GUID).innerText = request.domain;
+		document.getElementById('srta-' + GUID).style.display = 'block';
 	}
 
 	function setDisplayDomainScore(request) {
