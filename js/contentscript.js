@@ -29,7 +29,6 @@
 
 
 	function start() {
-		console.log('starting');
 		const body = document.getElementsByTagName('body')[0];
 		const elChild = document.createElement('div');
 
@@ -118,7 +117,11 @@
 	}
 
 	function setLoading(isLoading) {
-		document.getElementById('tcci-' + GUID).style.display = isLoading ? 'block' : 'none';
+		let tcci =  document.getElementById('tcci-' + GUID);
+		if (typeof(tcci) != 'undefined' && tcci != null)
+		{
+			document.getElementById('tcci-' + GUID).style.display = isLoading ? 'block' : 'none';
+		}
 	}
 
 	function createScoreCicle(score, trend, status, previousScore) {
