@@ -1,7 +1,7 @@
 {
 	"name": "Privacy Monitor by Osano",
 	"description": "We read the fine print, so you don't have to. Surf the web with our privacy plugin and receive attorney created trust scores.",
-	"version": "1.0.18",
+	"version": "1.0.30",
 	"author": "Osano, Inc., A Public Benefit Corporation",
 	"permissions": [
 		"activeTab",
@@ -17,6 +17,7 @@
 		],
 		"persistent": false
 	},
+	"options_page": "options.html",
 	"content_scripts": [
 		{
 			"matches": [

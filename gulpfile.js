@@ -14,7 +14,7 @@ gulp.task('build', function() {
 		.pipe(manifest({
 			buildnumber: true
 		}))
-		.pipe(gulpif('css/**/*.css', cssmin()))
+		//.pipe(gulpif('css/**/*.css', cssmin()))
 		//.pipe(gulpif('js/**/*.js', terser()))
 		.pipe(gulp.dest(distDir))
 });
@@ -24,9 +24,26 @@ gulp.task('copyImages', function() {
 		.pipe(gulp.dest(distDir + 'css/images'));
 });
 
+gulp.task('copyCSS', function() {
+	return gulp.src('css/**/*.css')
+		.pipe(cssmin())
+		.pipe(gulp.dest(distDir + 'css'));
+});
+
+gulp.task('copyJS', function() {
+	return gulp.src('js/**/*.js')
+		.pipe(terser())
+		.pipe(gulp.dest(distDir + 'js'));
+});
+
 gulp.task('copyIcons', function() {
 	return gulp.src('icons/*')
 		.pipe(gulp.dest(distDir + 'icons'));
+});
+
+gulp.task('copyOptions', function() {
+	return gulp.src('options.html')
+		.pipe(gulp.dest(distDir));
 });
 
 gulp.task('copyManifest', function() {
@@ -50,5 +67,5 @@ gulp.task('clean', function () {
 });
 
 gulp.task('default', function(){
-	return sequence('build', 'copyImages', 'copyIcons', 'copyManifest', 'zip', 'clean');
+	return sequence('build', 'copyJS', 'copyCSS', 'copyImages', 'copyIcons', 'copyOptions', 'copyManifest', 'zip', 'clean');
 });

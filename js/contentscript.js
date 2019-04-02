@@ -6,7 +6,9 @@
 
 	const urls = {
 		spinnerUrl: chrome.runtime.getURL('css/images/spinner.svg'),
-		activeIconUrl: chrome.runtime.getURL('css/images/logo.svg')
+		activeIconUrl: chrome.runtime.getURL('css/images/logo.svg'),
+		helpIconUrl: chrome.runtime.getURL('css/images/icon-help.svg'),
+		shareIconUrl: chrome.runtime.getURL('css/images/icon-share.svg')
 	}
 
 	const scoreText = {
@@ -46,7 +48,11 @@
 					<img id="tcci-${GUID}" src="${urls.spinnerUrl}"/>
 				</div>
 				<div id="tcs-${GUID}"></div>
-			  </div>
+				<div id="sbq-${GUID}">
+					<div id="help-${GUID}"><a id="help-link-${GUID}" href="https://www.privacymonitor.com/rating/" title="What does this score mean?" target="_blank"><img id="help-img-${GUID}" src="${urls.helpIconUrl}"/></a></div>
+					<div id="share-${GUID}"><a id="share-link-${GUID}" target="_blank" title="See this score on the web"><img id="share-img-${GUID}" src="${urls.shareIconUrl}"/></a></div>
+				</div>
+  			  </div>
 			  <div id="srta-${GUID}" style="display: none">
 				<div id="padded-${GUID}">Sorry, we haven't reviewed <span id="snrd-${GUID}"></span> yet.<br/>
 					<br/>If you would like us to add it to the queue for our legal experts to review, hit the &quot;Request&quot; button now.
@@ -172,6 +178,8 @@
 	function setDisplayDomainNotFound(request) {
 		document.getElementById('snrd-' + GUID).innerText = request.domain;
 		document.getElementById('srta-' + GUID).style.display = 'block';
+		document.getElementById('pmd-' + GUID).style.display = 'none';
+		document.getElementById('mti-' + GUID).style.display = 'none';
 	}
 
 	function setDisplayDomainScore(request) {
@@ -188,6 +196,10 @@
 		// set domain text to current browser hostname
 		const domainTXT = document.getElementById('pmd-' + GUID);
 		domainTXT.innerHTML = window.location.hostname;
+
+		// set share link URL
+		const domainLinkElement = document.getElementById('share-link-' + GUID);
+		domainLinkElement.href = "https://www.privacymonitor.com/rating/?q=" + request.domain;	
 
 		if (score === previousScore) {
 			// defaults
@@ -229,5 +241,7 @@
 			`<div>Score: ${score}</div>
 			${span}
 			<div class="pmt-${GUID}">Trend: <span class="${trendClass}">${trendText}</span></div>`;
+			document.getElementById('pmd-' + GUID).style.display = 'block';
+			document.getElementById('mti-' + GUID).style.display = 'grid';
 	}
 }());
