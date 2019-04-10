@@ -89,23 +89,28 @@
 		};
 
 		// message listener
-		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-			switch(request.message) {
+		chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+			switch (request.message) {
 				case 'NotFound':
 					setDisplayDomainNotFound(request);
 					setLoading(false);
 					break;
 				case 'ActiveTabScore':
-					modal.style.display = 'block';
-					displayModalTimeout = setTimeout(function () {
-						modal.classList.add('pmh-' + GUID);
-						setTimeout(function () {
-							modal.classList.remove('pmh-' + GUID);
-							modal.style.display = 'none';
-						}, 1000);
+					chrome.storage.sync.get({
+						autoOption: 'auto'
+					}, function (items) {
+						if (items.autoOption == 'auto') {
+							modal.style.display = 'block';
+							displayModalTimeout = setTimeout(function () {
+								modal.classList.add('pmh-' + GUID);
+								setTimeout(function () {
+									modal.classList.remove('pmh-' + GUID);
+									modal.style.display = 'none';
+								}, 1000);
 
-					}, 1000 * 8);
-
+							}, 1000 * 8);
+						}
+					})
 					setDisplayDomainScore(request);
 					setLoading(false);
 					break;
@@ -120,7 +125,7 @@
 					break;
 			}
 		});
-	}
+		}
 
 	function setLoading(isLoading) {
 		let tcci =  document.getElementById('tcci-' + GUID);

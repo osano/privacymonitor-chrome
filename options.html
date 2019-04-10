@@ -1,12 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <html>
-<title>Loading...</title>
-
 <head>
-    <script src="js/options.js" type="text/javascript"></script>
+    <title>Options</title>
+    <style type="text/css">
+    html, body {
+            min-width: 250px; /* your desired width */
+            min-height: 200px;
+            text-align: center;
+        }
+    </style>
 </head>
-
 <body>
-    <div style="width: 100%; text-align: center;">Loading...</div>
-</body>
+    <h3>Privacy Monitor Options</h3><br>
+    <br>
+    Auto Alert: <select id="autooption">       
+        <option value="auto">
+            Get Automatic Alerts
+        </option>
 
+        <option value="none">
+            Disable Automatic Alerts
+        </option>
+    </select>
+
+    <div id="status"></div><br>
+    <br>
+    <button id="save">Save Settings</button> <script src="js/options.js" type="text/javascript">
+</script>
+</body>
 </html>
