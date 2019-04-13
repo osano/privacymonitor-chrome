@@ -1,9 +1,11 @@
 function save_options() {
-	var autooption = document.getElementById('autooption').value;
-	chrome.storage.sync.set({
-		autoOption: autooption
-	}, function() {
-		var status = document.getElementById('status');
+	let options = {};
+	let elements = Array.prototype.slice.call(document.getElementsByTagName('select'));
+		elements.forEach(function(e){
+			options[e.id] = e.value;
+		});
+	chrome.storage.sync.set(options, function() {
+		let status = document.getElementById('status');
 		status.textContent = 'Options saved.';
 		setTimeout(function() {
 			status.textContent = '';
@@ -14,9 +16,11 @@ function save_options() {
 
 function restore_options() {
 	chrome.storage.sync.get({
-		autoOption: 'auto'
+		autooption: 'auto',
+		screentime: 8
 	}, function(items) {
-		document.getElementById('autooption').value = items.autoOption;
+		document.getElementById('autooption').value = items.autooption;
+		document.getElementById('screentime').value = items.screentime;
 	});
 }
 

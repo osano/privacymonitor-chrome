@@ -97,9 +97,10 @@
 					break;
 				case 'ActiveTabScore':
 					chrome.storage.sync.get({
-						autoOption: 'auto'
+						autooption: 'auto',
+						screentime: '8'
 					}, function (items) {
-						if (items.autoOption == 'auto') {
+						if (items.autooption == 'auto') {
 							modal.style.display = 'block';
 							displayModalTimeout = setTimeout(function () {
 								modal.classList.add('pmh-' + GUID);
@@ -108,7 +109,7 @@
 									modal.style.display = 'none';
 								}, 1000);
 
-							}, 1000 * 8);
+							}, 1000 * parseInt(items.screentime));
 						}
 					})
 					setDisplayDomainScore(request);
