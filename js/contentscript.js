@@ -10,7 +10,7 @@
 		helpIconUrl: chrome.runtime.getURL('css/images/icon-help.svg'),
 		shareIconUrl: chrome.runtime.getURL('css/images/icon-share.svg')
 	}
-
+	
 	const scoreText = {
 		scoreIncreased: 'Improving',
 		scoreDecreased: 'Getting Worse',
