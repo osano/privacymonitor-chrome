@@ -16,11 +16,11 @@ function save_options() {
 
 function restore_options() {
 	chrome.storage.sync.get({
-		autooption: 'auto',
-		screentime: 8
+		autoOption: 'auto',
+		screenTime: 8
 	}, function(items) {
-		document.getElementById('autooption').value = items.autooption;
-		document.getElementById('screentime').value = items.screentime;
+		document.getElementById('autoOption').value = items.autoOption;
+		document.getElementById('screenTime').value = items.screenTime;
 	});
 }
 
