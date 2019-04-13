@@ -74,10 +74,27 @@
 		const closeBtn = document.getElementsByClassName('ct-' + GUID)[0];
 		let displayModalTimeout;
 
-		closeBtn.onclick = function() {
+		let fadeModal = function (){
+			modal.classList.add('pmh-' + GUID);
+			setTimeout(function () {
+				modal.classList.remove('pmh-' + GUID);
+				modal.style.display = 'none';
+			}, 1000);
+		}
+
+		closeBtn.onclick = function () {
 			modal.style.display = 'none';
 			clearTimeout(displayModalTimeout);
 		};
+
+		/* if they mouse over the popup then don't auto fade out */
+		modal.addEventListener("mouseenter", function (event) {
+			clearTimeout(displayModalTimeout);
+		});
+		
+		modal.addEventListener("mouseleave", function (event) {
+			fadeModal();
+		});
 
 		const sendBtn = document.getElementById('tbsend-' + GUID);
 		sendBtn.onclick = function() {
@@ -98,17 +115,12 @@
 				case 'ActiveTabScore':
 					chrome.storage.sync.get({
 						autoOption: 'auto',
-						screenTime: '8'
+						screenTime: '6'
 					}, function (items) {
 						if (items.autoOption == 'auto') {
 							modal.style.display = 'block';
 							displayModalTimeout = setTimeout(function () {
-								modal.classList.add('pmh-' + GUID);
-								setTimeout(function () {
-									modal.classList.remove('pmh-' + GUID);
-									modal.style.display = 'none';
-								}, 1000);
-
+								fadeModal();
 							}, 1000 * parseInt(items.screenTime));
 						}
 					})

@@ -17,7 +17,7 @@ function save_options() {
 function restore_options() {
 	chrome.storage.sync.get({
 		autoOption: 'auto',
-		screenTime: 8
+		screenTime: 6
 	}, function(items) {
 		document.getElementById('autoOption').value = items.autoOption;
 		document.getElementById('screenTime').value = items.screenTime;
