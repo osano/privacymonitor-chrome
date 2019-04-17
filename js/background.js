@@ -70,28 +70,28 @@
 		}
 	}
 
-	function getPrivacyScoreLocal(message, tabId, domain, now){
+	function getPrivacyScoreLocal(message, tabId, domain){
 		localforage.getItem(domain).then(function(item) {
-			if(item && item.score && !hasExpired(item.scoreDate, now)) {
+			if(item && item.score && !hasExpired(item.scoreDate)) {
 				// domain score is available locally and has not gone stale
-				sendDataToContentScript(tabId, domain, item, now);
+				sendDataToContentScriptHidden(tabId, domain, item);
 			} else if(
 				!item ||
-				(item && !item.score && hasNoScoreAvailableExpired(item.scoreDate, now)) ||
-				(item && item.score && hasExpired(item.scoreDate, now))
+				(item && !item.score && hasNoScoreAvailableExpired(item.scoreDate)) ||
+				(item && item.score && hasExpired(item.scoreDate))
 			) {
 				// domain score was not found
 				// OR domain score was not found last time we checked
 				// OR domain score has gone stale
 				// fetch again
-				getPrivacyScoreAPI(message, tabId, domain, now);
+				getPrivacyScoreAPI(message, tabId, domain);
 			} else {
 				sendDomainNotFound(domain, tabId);
 			}
 		});
 	}
 
-	async function getPrivacyScoreAPI(message, tabId, domain, now) {
+	async function getPrivacyScoreAPI(message, tabId, domain) {
 		await fetch(`${urls.baseURL}/score?q=${domain}`).then( response => {
 			if(response.status === 404) {
 				return null;
@@ -101,23 +101,21 @@
 
 			throw new Error(`Unable to complete privacymonitor.com API request (HTTP ${response.status})`);
 		}).then(result => {
-			if (result) {
+			if (result && result.score) {
 				const data = {
 					score: result.score,
 					previousScore: result.previousScore,
-					scoreDate: now,
-					lastAutoToastDate: now
+					scoreDate: Date.now()
 				};
 
 				storePrivacyScore(domain, data);
 
-				sendDataToContentScript(tabId, domain, data, now);
+				sendDataToContentScriptActive(tabId, domain, data);
 			} else {
 				const data = {
 					score: null,
 					previousScore: null,
-					scoreDate: now,
-					lastAutoToastDate: now
+					scoreDate: Date.now()
 				};
 
 				storePrivacyScore(domain, data);
@@ -133,21 +131,12 @@
 			domain: domain
 		});
 	}
-	
-	function updateLastAutoToast(domain, now) {
-		localforage.getItem(domain).then(function (item) {
-			if(item !== null){
-				item.lastAutoToastDate = now;
-				localforage.setItem(domain, item );
-			}
-		});
-	}
 
 	function storePrivacyScore(domain, data) {
 		localforage.setItem(domain, data);
 	}
 
-	function sendDataToContentScript(tabId, domain, data, now){
+	function sendDataToContentScriptActive(tabId, domain, data){
 		chrome.browserAction.setIcon({
 			path : {
 				'48': 'css/images/iconColored.png'
@@ -155,32 +144,38 @@
 			tabId : tabId
 		});
 
-		if(data.lastAutoToastDate === null || data.lastAutoToastDate === now || hasExpired(data.lastAutoToastDate, now)){
-			updateLastAutoToast(domain, now);
-			chrome.tabs.sendMessage( tabId, {
-				message: 'ActiveTabScore',
-				score: data.score,
-				previousScore: data.previousScore,
-				domain: domain
-			});
-		} else {
-			chrome.tabs.sendMessage( tabId, {
-				message: 'HiddenTabScore',
-				score: data.score,
-				previousScore: data.previousScore,
-				domain: domain
-			});
-		}
+		chrome.tabs.sendMessage( tabId, {
+			message: 'ActiveTabScore',
+			score: data.score,
+			previousScore: data.previousScore,
+			domain: domain
+		});
 	}
 
-	function hasExpired(then, now) {
+	function sendDataToContentScriptHidden(tabId, domain, data){
+		chrome.browserAction.setIcon({
+			path : {
+				'48': 'css/images/iconColored.png'
+			},
+			tabId : tabId
+		});
+
+		chrome.tabs.sendMessage( tabId, {
+			message: 'HiddenTabScore',
+			score: data.score,
+			previousScore: data.previousScore,
+			domain: domain
+		});
+	}
+
+	function hasExpired(then) {
 		const expireTime = Number(then) + (expiration.lastScoreExpirationDays * 86400 * 1000);
-	  	return expireTime < now;
+	  	return expireTime < Date.now();
 	}
 
-	function hasNoScoreAvailableExpired(then, now) {
+	function hasNoScoreAvailableExpired(then) {
 		const expireTime = Number(then) + (expiration.noScoreExpirationDays * 86400 * 1000);
-		return expireTime < now;
+		return expireTime < Date.now();
 	}
 
 	function extractRootDomain(urlStr){
