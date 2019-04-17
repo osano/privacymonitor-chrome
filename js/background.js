@@ -49,7 +49,7 @@
 		const domain = extractRootDomain(sender.tab.url);
 
 		if (domain !== undefined) {
-			getPrivacyScoreLocal(message, sender.tab.id, domain, Date.now());
+			getPrivacyScoreLocal(message, sender.tab.id, domain);
 		}
 	}
 
