@@ -77,8 +77,8 @@
 				sendDataToContentScriptHidden(tabId, domain, item);
 			} else if(
 				!item ||
-				(item && !item.score && hasNoScoreAvailableExpired(item.scoreDate)) ||
-				(item && item.score && hasExpired(item.scoreDate))
+				(item && !item.score && hasExpired(item.scoreDate, expiration.noScoreExpirationDays)) ||
+				(item && item.score && hasExpired(item.scoreDate, expiration.lastScoreExpirationDays))
 			) {
 				// domain score was not found
 				// OR domain score was not found last time we checked
@@ -168,14 +168,9 @@
 		});
 	}
 
-	function hasExpired(then) {
-		const expireTime = Number(then) + (expiration.lastScoreExpirationDays * 86400 * 1000);
+	function hasExpired(then, expirationDays) {
+		const expireTime = Number(then) + (expirationDays * 86400 * 1000);
 	  	return expireTime < Date.now();
-	}
-
-	function hasNoScoreAvailableExpired(then) {
-		const expireTime = Number(then) + (expiration.noScoreExpirationDays * 86400 * 1000);
-		return expireTime < Date.now();
 	}
 
 	function extractRootDomain(urlStr){
