@@ -9,13 +9,13 @@
 
 ## Dependencies & Requirements
 
-Privacy Monitor has no external dependencies.
+The build uses Node.js, npm, and the dependencies listed in `package.json`.
 
 ## Building
 
 1. Clone this repository.
 2. Edit to your heart's content.
-3. To build the extension for publishing `npm install` & `gulp`      
+3. To build the extension for publishing, run `npm install`, then run `npx gulp`.
 4. Upload the upload.zip to the store
 
 ## Export Control
@@ -41,6 +41,6 @@ source code.
 [logo]: Contrib/logo.png
 [osano]: https://www.osano.com
 [li]: https://img.shields.io/badge/license-MIT-brightgreen.svg
-[ll]: LICENSE
+[ll]: LICENSE.md
 [pi]: https://img.shields.io/badge/platform-chrome-lightgrey.svg
 [pl]: https://developer.chrome.com/extensions
